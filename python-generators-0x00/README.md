@@ -37,9 +37,28 @@ This directory contains Python scripts for managing the ALX_prodev MySQL databas
   - Use the `yield` Python generator.
   - Prototype: `def stream_users()`.
   - The function should have no more than 1 loop.
-- **Status**: In progress.
+- **Status**: Completed.
 - **Dependencies**: Requires `mysql-connector-python` and `python-dotenv` (install with `pip install mysql-connector-python python-dotenv`).
 - **Setup**:
   - Ensure `.env` is configured with MySQL credentials.
   - Run with `python 0-stream_users.py` after database setup.
 - **Notes**: Assumes the `user_data` table is populated via `seed.py`.
+
+## Task 3: Batch Processing Large Data
+- **Objective**: Create a generator to fetch and process data in batches from the users database.
+- **Files**:
+  - `1-batch_processing.py`: Python script with functions to fetch and process batches.
+- **Instructions**:
+  - a) Write a function `stream_users_in_batches(batch_size)` that fetches rows in batches.
+  - b) Write a function `batch_processing(batch_size)` that processes each batch to filter users over the age of 25.
+  - Use no more than 3 loops in your code.
+  - Your script must use the `yield` generator.
+- **Prototypes**:
+  - `def stream_users_in_batches(batch_size)`
+  - `def batch_processing(batch_size)`
+- **Status**: In progress.
+- **Dependencies**: Requires `mysql-connector-python` and `python-dotenv` (install with `pip install mysql-connector-python python-dotenv`).
+- **Setup**:
+  - Ensure `.env` is configured with MySQL credentials.
+  - Run with `python 1-batch_processing.py` after database setup.
+- **Notes**: Assumes the `user_data` table is populated via `seed.py`. Filters users where `age > 25`.
