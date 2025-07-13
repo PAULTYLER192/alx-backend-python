@@ -52,13 +52,50 @@ This directory contains Python scripts for managing the ALX_prodev MySQL databas
   - a) Write a function `stream_users_in_batches(batch_size)` that fetches rows in batches.
   - b) Write a function `batch_processing(batch_size)` that processes each batch to filter users over the age of 25.
   - Use no more than 3 loops in your code.
-  - Your script must use the `yield` generator.
+  - Your script must use the `yield` generator and include a `return` statement as per review feedback.
 - **Prototypes**:
   - `def stream_users_in_batches(batch_size)`
   - `def batch_processing(batch_size)`
-- **Status**: In progress.
+- **Status**: Completed.
 - **Dependencies**: Requires `mysql-connector-python` and `python-dotenv` (install with `pip install mysql-connector-python python-dotenv`).
 - **Setup**:
   - Ensure `.env` is configured with MySQL credentials.
   - Run with `python 1-batch_processing.py` after database setup.
-- **Notes**: Assumes the `user_data` table is populated via `seed.py`. Filters users where `age > 25`.
+- **Notes**: Assumes the `user_data` table is populated via `seed.py`. Filters users where `age > 25`. Uses `return None` to signal end of data stream.
+
+## Task 4: Create a Generator to Fetch and Process Data in Batches from the Users Database
+- **Objective**: Create a generator to fetch and process data in batches from the users database.
+- **Files**:
+  - `2-batch_processing_v2.py`: Python script with functions to fetch and process batches.
+- **Instructions**:
+  - a) Write a function `stream_users_in_batches(batch_size)` that fetches rows in batches.
+  - b) Write a function `batch_processing()` that processes each batch to filter users over the age of 25.
+  - Use no more than 3 loops in your code.
+  - Your script must use the `yield` generator.
+- **Prototypes**:
+  - `def stream_users_in_batches(batch_size)`
+  - `def batch_processing()`
+- **Status**: Completed.
+- **Dependencies**: Requires `mysql-connector-python` and `python-dotenv` (install with `pip install mysql-connector-python python-dotenv`).
+- **Setup**:
+  - Ensure `.env` is configured with MySQL credentials.
+  - Run with `python 2-batch_processing_v2.py` after database setup.
+- **Notes**: Assumes the `user_data` table is populated via `seed.py`. Uses a default batch size of 10 in `batch_processing()`. Filters users where `age > 25`.
+
+## Task 5: Simulate Fetching Paginated Data from the Users Database Using a Generator to Lazily Load Each Page
+- **Objective**: Simulate fetching paginated data from the users database using a generator to lazily load each page.
+- **Files**:
+  - `3-lazy_paginate.py`: Python script with a generator function to lazily load pages.
+- **Instructions**:
+  - Implement a generator function `lazy_paginate(page_size)` that implements `paginate_users(page_size, offset)` to fetch the next page when needed, starting with an offset of 0.
+  - Use only one loop.
+  - Include the `paginate_users` function in your code.
+  - Use the `yield` generator.
+- **Prototype**:
+  - `def lazy_paginate(page_size)`
+- **Status**: In progress.
+- **Dependencies**: Requires `mysql-connector-python` and `python-dotenv` (install with `pip install mysql-connector-python python-dotenv`).
+- **Setup**:
+  - Ensure `.env` is configured with MySQL credentials.
+  - Run with `python 3-lazy_paginate.py` after database setup.
+- **Notes**: Assumes the `user_data` table is populated via `seed.py`. Lazily loads pages starting at offset 0.
