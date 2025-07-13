@@ -63,29 +63,10 @@ This directory contains Python scripts for managing the ALX_prodev MySQL databas
   - Run with `python 1-batch_processing.py` after database setup.
 - **Notes**: Assumes the `user_data` table is populated via `seed.py`. Filters users where `age > 25`. Uses `return None` to signal end of data stream.
 
-## Task 4: Create a Generator to Fetch and Process Data in Batches from the Users Database
-- **Objective**: Create a generator to fetch and process data in batches from the users database.
-- **Files**:
-  - `2-batch_processing_v2.py`: Python script with functions to fetch and process batches.
-- **Instructions**:
-  - a) Write a function `stream_users_in_batches(batch_size)` that fetches rows in batches.
-  - b) Write a function `batch_processing()` that processes each batch to filter users over the age of 25.
-  - Use no more than 3 loops in your code.
-  - Your script must use the `yield` generator.
-- **Prototypes**:
-  - `def stream_users_in_batches(batch_size)`
-  - `def batch_processing()`
-- **Status**: Completed.
-- **Dependencies**: Requires `mysql-connector-python` and `python-dotenv` (install with `pip install mysql-connector-python python-dotenv`).
-- **Setup**:
-  - Ensure `.env` is configured with MySQL credentials.
-  - Run with `python 2-batch_processing_v2.py` after database setup.
-- **Notes**: Assumes the `user_data` table is populated via `seed.py`. Uses a default batch size of 10 in `batch_processing()`. Filters users where `age > 25`.
-
-## Task 5: Simulate Fetching Paginated Data from the Users Database Using a Generator to Lazily Load Each Page
+## Task 4: Simulate Fetching Paginated Data from the Users Database Using a Generator to Lazily Load Each Page
 - **Objective**: Simulate fetching paginated data from the users database using a generator to lazily load each page.
 - **Files**:
-  - `3-lazy_paginate.py`: Python script with a generator function to lazily load pages.
+  - `2-lazy_paginate.py`: Python script with a generator function to lazily load pages.
 - **Instructions**:
   - Implement a generator function `lazy_paginate(page_size)` that implements `paginate_users(page_size, offset)` to fetch the next page when needed, starting with an offset of 0.
   - Use only one loop.
@@ -99,3 +80,22 @@ This directory contains Python scripts for managing the ALX_prodev MySQL databas
   - Ensure `.env` is configured with MySQL credentials.
   - Run with `python 3-lazy_paginate.py` after database setup.
 - **Notes**: Assumes the `user_data` table is populated via `seed.py`. Lazily loads pages starting at offset 0.
+
+### Task 5: Use a Generator to Compute a Memory-Efficient Aggregate Function (Average Age) for a Large Dataset
+- **Objective**: Use a generator to compute a memory-efficient aggregate function (i.e., average age) for a large dataset.
+- **Files**:
+  - `4-stream_ages.py`: Python script with a generator to compute average age.
+- **Instructions**:
+  - Implement a generator `stream_user_ages()` that yields user ages one by one.
+  - Use the generator in a different function to calculate the average age without loading the entire dataset into memory.
+  - Your script should print "Average age of users: average_age".
+  - Use no more than two loops in your script.
+  - You are not allowed to use the SQL `AVERAGE`.
+- **Prototypes**:
+  - Implicit: `def stream_user_ages()` and `def calculate_average_age()`
+- **Status**: In progress.
+- **Dependencies**: Requires `mysql-connector-python` and `python-dotenv` (install with `pip install mysql-connector-python python-dotenv`).
+- **Setup**:
+  - Ensure `.env` is configured with MySQL credentials.
+  - Run with `python 4-stream_ages.py` after database setup.
+- **Notes**: Assumes the `user_data` table is populated via `seed.py`. Computes average age manually without SQL `AVG()`.
