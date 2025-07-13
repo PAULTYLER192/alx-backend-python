@@ -19,10 +19,7 @@ def paginate_users(page_size, offset):
     try:
         connection = mysql.connector.connect(**DB_CONFIG)
         cursor = connection.cursor()
-        cursor.execute(
-            "SELECT user_id, name, email, age FROM user_data LIMIT %s OFFSET %s",
-            (page_size, offset)
-        )
+        cursor.execute(f"SELECT * FROM user_data LIMIT {page_size} OFFSET {offset}")
         return cursor.fetchall()
     except mysql.connector.Error as err:
         print(f"Error paginating data: {err}")
