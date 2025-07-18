@@ -72,3 +72,20 @@ This repository contains Python scripts for various backend tasks, including dat
   - Ensure `users.db` exists with a `users` table (e.g., columns: `id`, `name`, `email`, `age`).
   - Run with `python 3-retry_on_failure.py` after setup.
 - **Notes**: Retries up to 3 times with a 1-second delay (as specified) on transient errors like database locks.
+- 
+### Task 4: Cache Database Queries
+- **Objective**: Create a decorator that caches the results of database queries to avoid redundant calls.
+- **Files**:
+  - `4-cache_query.py`: Python script with a decorator to cache query results.
+- **Instructions**:
+  - Implement a `cache_query(func)` decorator that caches query results based on the SQL query string.
+  - Use `time`, `sqlite3`, and `functools` imports.
+  - Use the provided `query_cache` dictionary.
+- **Prototype**:
+  - `def cache_query()`
+- **Status**: In progress.
+- **Dependencies**: Requires `sqlite3` and `time` (included with Python).
+- **Setup**:
+  - Ensure `users.db` exists with a `users` table (e.g., columns: `id`, `name`, `email`, `age`).
+  - Run with `python 4-cache_query.py` after setup.
+- **Notes**: Caches results in memory using the query string as a key, reducing redundant database calls.
