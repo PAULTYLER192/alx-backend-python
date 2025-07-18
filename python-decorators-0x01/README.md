@@ -54,3 +54,21 @@ This repository contains Python scripts for various backend tasks, including dat
   - Ensure `users.db` exists with a `users` table (e.g., columns: `id`, `name`, `email`, `age`).
   - Run with `python 2-transactional.py` after setup.
 - **Notes**: Ensures data consistency with commit/rollback, stacked with connection handling.
+- 
+
+### Task 3: Retry Database Queries
+- **Objective**: Create a decorator that retries database operations if they fail due to transient errors.
+- **Files**:
+  - `3-retry_on_failure.py`: Python script with a decorator to retry failed operations.
+- **Instructions**:
+  - Implement a `retry_on_failure(retries=3, delay=2)` decorator that retries the function a certain number of times if it raises an exception.
+  - Paste the `with_db_connection` decorator from Task 1.
+  - Use `time`, `sqlite3`, and `functools` imports.
+- **Prototype**:
+  - `def retry_on_failure(retries=3, delay=2)`
+- **Status**: In progress.
+- **Dependencies**: Requires `sqlite3` and `time` (included with Python).
+- **Setup**:
+  - Ensure `users.db` exists with a `users` table (e.g., columns: `id`, `name`, `email`, `age`).
+  - Run with `python 3-retry_on_failure.py` after setup.
+- **Notes**: Retries up to 3 times with a 1-second delay (as specified) on transient errors like database locks.
