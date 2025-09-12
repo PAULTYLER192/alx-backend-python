@@ -102,7 +102,7 @@ python manage.py seed
 - Creates 3 users (demo accounts).  
 - Creates 3 conversations with 2–3 random participants.  
 - Adds 2–5 messages per conversation.  
-
+ 
 Verify in shell:
 ```python
 from chats.models import Conversation, Message
