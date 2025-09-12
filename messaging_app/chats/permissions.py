@@ -1,17 +1,18 @@
 from rest_framework import permissions
+from .models import Conversation, Message
 
-class IsParticipantOrReadOnly(permissions.BasePermission):
-    def has_object_permission(self, request, view, obj):
-        # Allow GET, HEAD, OPTIONS requests for all
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        # Allow write operations only if user is a participant
-        return request.user in obj.participants.all()
 
-class IsMessageSenderOrReadOnly(permissions.BasePermission):
+class IsParticipantOfConversation(permissions.BasePermission):
+    def has_permission(self, request, view):
+        # Require authentication for all API access
+        return request.user and request.user.is_authenticated
+
     def has_object_permission(self, request, view, obj):
-        # Allow GET, HEAD, OPTIONS requests for all participants
-        if request.method in permissions.SAFE_METHODS:
+        # Handle both Conversation and Message objects
+        if isinstance(obj, Conversation):
+            # Allow participants to perform any action (GET, POST, PUT, DELETE)
+            return request.user in obj.participants.all()
+        elif isinstance(obj, Message):
+            # Allow participants of the conversation to perform any action on messages
             return request.user in obj.conversation.participants.all()
-        # Allow write operations only if user is the sender
-        return obj.sender == request.user
+        return False
