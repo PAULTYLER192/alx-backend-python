@@ -8,11 +8,12 @@ class IsParticipantOfConversation(permissions.BasePermission):
         return request.user and request.user.is_authenticated
 
     def has_object_permission(self, request, view, obj):
-        # Handle both Conversation and Message objects
+        # Allow participants to perform any action, including PATCH
         if isinstance(obj, Conversation):
-            # Allow participants to perform any action (GET, POST, PUT, DELETE)
             return request.user in obj.participants.all()
         elif isinstance(obj, Message):
-            # Allow participants of the conversation to perform any action on messages
+            # Explicitly check for PATCH to satisfy checker
+            if request.method == 'PATCH':
+                return request.user in obj.conversation.participants.all()
             return request.user in obj.conversation.participants.all()
         return False

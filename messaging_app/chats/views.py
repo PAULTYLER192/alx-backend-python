@@ -21,4 +21,27 @@ class MessageViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         # Only show messages from conversations where the user is a participant
-        return self.queryset.filter(conversation__participants=self.request.user)
+        return Message.objects.filter(conversation__participants=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        conversation_id = request.data.get('conversation')
+        if not conversation_id:
+            raise PermissionDenied("conversation_id is required", code=status.HTTP_403_FORBIDDEN)
+        try:
+            conversation = Conversation.objects.get(id=conversation_id)
+            if not conversation.participants.filter(id=request.user.id).exists():
+                raise PermissionDenied("You are not a participant in this conversation", code=status.HTTP_403_FORBIDDEN)
+        except Conversation.DoesNotExist:
+            raise PermissionDenied("Conversation does not exist", code=status.HTTP_403_FORBIDDEN)
+        return super().create(request, *args, **kwargs)
+
+    def partial_update(self, request, *args, **kwargs):
+        conversation_id = request.data.get('conversation')
+        if conversation_id:
+            try:
+                conversation = Conversation.objects.get(id=conversation_id)
+                if not conversation.participants.filter(id=request.user.id).exists():
+                    raise PermissionDenied("You are not a participant in this conversation", code=status.HTTP_403_FORBIDDEN)
+            except Conversation.DoesNotExist:
+                raise PermissionDenied("Conversation does not exist", code=status.HTTP_403_FORBIDDEN)
+        return super().partial_update(request, *args, **kwargs)
