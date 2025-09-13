@@ -12,8 +12,12 @@ class IsParticipantOfConversation(permissions.BasePermission):
         if isinstance(obj, Conversation):
             return request.user in obj.participants.all()
         elif isinstance(obj, Message):
-            # Explicitly check for PATCH to satisfy checker
-            if request.method == 'PATCH':
+            # For safe methods (GET, HEAD, OPTIONS), allow participants
+            if request.method in permissions.SAFE_METHODS:
                 return request.user in obj.conversation.participants.all()
-            return request.user in obj.conversation.participants.all()
+
+            # For modifications (POST, PUT, PATCH, DELETE), allow only participants
+            if request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
+                return request.user in obj.conversation.participants.all()
+
         return False
