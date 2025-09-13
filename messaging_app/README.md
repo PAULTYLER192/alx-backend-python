@@ -1,216 +1,227 @@
-# ALX Backend Python: Messaging App  
+ALX Backend Python: Messaging App
+A Django REST Framework (DRF) backend for a messaging application with JWT authentication.
+Table of Contents
 
-A Django REST Framework (DRF) backend for a messaging application with JWT authentication.  
+Project Overview
+Features
+Tech Stack
+Setup Instructions
+Database Seeding
+API Documentation
+API Endpoints
+Using auth-helper.ps1
+Troubleshooting
+Contributing
+License
 
----
+Project Overview
+This project is a backend API for a messaging application, allowing users to authenticate and manage messages/conversations. It uses Django REST Framework with JWT authentication.
+Features
 
-## Table of Contents
-- Project Overview  
-- Features  
-- Tech Stack  
-- Setup Instructions  
-- Database Seeding  
-- API Endpoints  
-- Troubleshooting  
-- Contributing  
-- License  
+JWT Authentication: Secure user authentication using JSON Web Tokens with custom claims (username, email).
+Conversations: Create and manage conversations between users.
+Messages: Send, view, update, and delete messages within conversations, with access restricted to participants.
+Permissions: Custom IsParticipantOfConversation ensures only authenticated participants can perform actions (GET, POST, PUT, PATCH, DELETE), with explicit checks for POST, PUT, PATCH, and DELETE methods.
+Pagination: Messages API returns 20 messages per page, with customizable page size.
+Filtering: Filter messages by participant (user in conversation) or timestamp range using django-filter.
+Seeding: Populate database with sample users, conversations, and messages.
+API Documentation: Swagger and Redoc interfaces for easy API exploration.
+auth-helper.ps1: PowerShell script to manage JWT tokens and API calls.
 
----
+Tech Stack
 
-## Project Overview  
-This project is a backend API for a messaging application, allowing users to authenticate and manage messages/conversations. It uses Django REST Framework with JWT authentication.  
+Backend: Django 5.2.6, Django REST Framework
+Authentication: djangorestframework-simplejwt
+Documentation: drf-yasg
+Filtering: django-filter
+Database: SQLite (initial setup)
+Environment: django-environ
+Python: 3.13.7
+OS: Windows (tested), Linux/Mac compatible
 
----
+Setup Instructions
 
-## Features
-- **JWT Authentication**: Secure user authentication using JSON Web Tokens.  
-- **Conversations**: Create and manage conversations between users.  
-- **Messages**: Send and view messages within conversations, with access restricted to participants.  
-- **Permissions**: Users can only access their own conversations and messages.  
-- **Seeding**: Populate the database with sample users, conversations, and messages.  
-
----
-
-## Tech Stack
-- **Backend**: Django 5.2.6, Django REST Framework  
-- **Authentication**: djangorestframework-simplejwt  
-- **Database**: SQLite (default; can be switched to PostgreSQL/MySQL)  
-- **Environment**: django-environ  
-- **Python**: 3.13.7  
-- **OS**: Windows (tested), Linux/Mac compatible  
-
----
-
-## Setup Instructions  
-
-### Clone the Repository
-```bash
+Clone the Repository:
 git clone https://github.com/PAULTYLER192/alx-backend-python.git
 cd alx-backend-python/messaging_app
-```
 
-### Set Up Virtual Environment
-```bash
+
+Set Up Virtual Environment:
 python -m venv venv
-.env\Scriptsctivate  # Windows
-source venv/bin/activate # Linux/Mac
-```
+.\venv\Scripts\activate
 
-### Install Dependencies
-```bash
+
+Install Dependencies:
 pip install -r requirements.txt
-```
 
-### Set Up Environment Variables
-1. Copy `.env.example` to `.env`:
-   ```bash
-   cp .env.example .env
-   ```
-2. Update `.env` with:
-   - A secure `SECRET_KEY`  
-   - Your database configuration (if not using SQLite)  
-   - Any other sensitive values  
 
-⚠️ **Never commit your `.env` file.** It’s already included in `.gitignore`.  
+Set Up Environment Variables:
 
-### Apply Migrations
-```bash
+Copy .env.example to .env:copy .env.example .env
+
+
+Edit .env with:SECRET_KEY=your_secure_key_here
+DJANGO_API_BASE_URL=http://127.0.0.1:8000
+DJANGO_API_USERNAME=airbnb_user
+DJANGO_API_PASSWORD=favor@254
+
+
+
+
+Apply Migrations:
 python manage.py migrate
-```
 
-### Create Superuser
-```bash
+
+Create Superuser:
 python manage.py createsuperuser
-```
 
-### Run Server
-```bash
+
+Run Server:
 python manage.py runserver
-```
 
-- Admin panel: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)  
-- API root: [http://127.0.0.1:8000/api/](http://127.0.0.1:8000/api/)  
 
----
+Admin panel: http://127.0.0.1:8000/admin/.
+API: http://127.0.0.1:8000/api/.
+Swagger: http://127.0.0.1:8000/swagger/.
+Redoc: http://127.0.0.1:8000/redoc/.
 
-## Database Seeding
-Populate the database with sample users, conversations, and messages:  
-```bash
+
+
+Database Seeding
+Populate the database with sample users, conversations, and messages:
 python manage.py seed
-```
 
-- Creates 3 users (demo accounts).  
-- Creates 3 conversations with 2–3 random participants.  
-- Adds 2–5 messages per conversation.  
- 
-Verify in shell:
-```python
+
+Creates 3 users (airbnb_user, testuser, user3).
+Creates 3+ conversations with 2-3 random participants.
+Adds 2-5 messages per conversation.
+Verify in admin panel or via:python manage.py shell
+
 from chats.models import Conversation, Message
 print(Conversation.objects.count())
 print(Message.objects.count())
-```
 
----
 
-## API Endpoints  
 
-### Authentication
-All endpoints require JWT authentication for write operations (`POST`, `PUT`, `DELETE`).  
+API Documentation
+Explore the API using Swagger or Redoc:
 
-**Obtain JWT Tokens**
-```powershell
-$response = Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/token/" `
-    -Method Post `
-    -ContentType "application/json" `
-    -Body '{"username":"<your_username>","password":"<your_password>"}'
+Swagger UI: http://127.0.0.1:8000/swagger/ (interactive interface to test endpoints).
+Redoc: http://127.0.0.1:8000/redoc/ (static documentation).
+Authenticate in Swagger by clicking "Authorize" and entering Bearer <access_token>.
 
-$accessToken = $response.access
-Write-Output "Access Token: $accessToken"
-```
+API Endpoints
+All endpoints require JWT authentication and participant status for access. Use the access token from auth-helper.ps1.
 
-**Refresh Access Token**
-```powershell
-$response = Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/token/refresh/" `
-    -Method Post `
-    -ContentType "application/json" `
-    -Body '{"refresh":"<your_refresh_token>"}'
-$accessToken = $response.access
-```
+POST /api/token/: Obtain JWT access and refresh tokens with custom claims.. .\auth-helper.ps1
+$tokens = Get-ValidTokens
+Write-Output "Access Token: $($tokens.access)"
 
----
 
-### Conversations
-**List or Create**
-```powershell
-Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/chats/conversations/" `
-    -Method Get `
-    -Headers @{Authorization = "Bearer $accessToken"}
-```
+POST /api/token/refresh/: Refresh access token.. .\auth-helper.ps1
+$tokens = Refresh-Tokens $tokens.refresh
 
-**Create with participants**
-```powershell
-Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/chats/conversations/" `
-    -Method Post `
-    -Headers @{Authorization = "Bearer $accessToken"} `
-    -ContentType "application/json" `
-    -Body '{"participant_ids":[2]}'
-```
 
----
+GET/POST /api/chats/conversations/: List or create conversations (participants only).. .\auth-helper.ps1
+Invoke-Api -endpoint "/api/chats/conversations/" -method Post -body @{participant_ids=@(2)}
 
-### Messages
-**List or Create**
-```powershell
-Invoke-RestMethod -Uri "http://127.0.0.1:8000/api/chats/messages/" `
-    -Method Post `
-    -Headers @{Authorization = "Bearer $accessToken"} `
-    -ContentType "application/json" `
-    -Body '{"conversation_id":1,"content":"Hello, how are you?"}'
-```
 
----
+GET/PUT/DELETE /api/chats/conversations//: Retrieve, update, or delete a conversation (participants only).
+GET/POST /api/chats/messages/: List or create messages (participants only).
+Supports pagination (?page=2, ?page_size=10) and filtering (?participant=2, ?timestamp_gte=2025-09-12T00:00:00Z).
 
-## Troubleshooting  
+. .\auth-helper.ps1
+Invoke-Api -endpoint "/api/chats/messages/" -method Post -body @{conversation=1; content="Hello, how are you?"}
+Invoke-Api -endpoint "/api/chats/messages/?participant=2&timestamp_gte=2025-09-12T00:00:00Z" -method Get
 
-- **Token Not Valid**:  
-  Ensure you’re using the **access token**, not the refresh token. Refresh if expired.  
 
-- **User Not Found**:  
-  Verify users exist:
-  ```python
-  from django.contrib.auth.models import User
-  print(User.objects.all())
-  ```
+GET/PUT/PATCH/DELETE /api/chats/messages//: Retrieve, update, partially update, or delete a message (participants only).. .\auth-helper.ps1
+Invoke-Api -endpoint "/api/chats/messages/1/" -method Put -body @{conversation=1; content="Updated via PUT"}
+Invoke-Api -endpoint "/api/chats/messages/1/" -method Patch -body @{content="Updated via PATCH"}
+Invoke-Api -endpoint "/api/chats/messages/1/" -method Delete
 
-- **Permission Denied**:  
-  Confirm `REST_FRAMEWORK` in `settings.py` includes `JWTAuthentication`.  
 
-- **Init File Errors**:  
-  Ensure `chats/management/__init__.py` and `chats/management/commands/__init__.py` are empty UTF-8 files:
-  ```powershell
-  Set-Content -Path chats\management\__init__.py -Value "" -Encoding UTF8
-  Set-Content -Path chats\management\commands\__init__.py -Value "" -Encoding UTF8
-  ```
 
----
+Using auth-helper.ps1
+The auth-helper.ps1 script simplifies JWT token management:
 
-## Contributing
-1. Fork the repository.  
-2. Create a feature branch:  
-   ```bash
-   git checkout -b feature/your-feature
-   ```  
-3. Commit changes:  
-   ```bash
-   git commit -m "Add your feature"
-   ```  
-4. Push to the branch:  
-   ```bash
-   git push origin feature/your-feature
-   ```  
-5. Open a pull request.  
+Set environment variables in .env:DJANGO_API_BASE_URL=http://127.0.0.1:8000
+DJANGO_API_USERNAME=airbnb_user
+DJANGO_API_PASSWORD=favor@254
 
----
 
-## License  
-MIT License  
+Source the script:. .\auth-helper.ps1
+
+
+Use Invoke-Api for authenticated requests, as shown in API Endpoints.
+
+Troubleshooting
+
+Permission Denied (403):
+Ensure user is authenticated and a participant:. .\auth-helper.ps1
+Invoke-Api -endpoint "/api/chats/messages/1/" -method Get
+
+
+Check REST_FRAMEWORK in settings.py includes IsParticipantOfConversation.
+
+
+Token Not Valid:
+Verify .env has correct DJANGO_API_USERNAME and DJANGO_API_PASSWORD.
+Refresh tokens:. .\auth-helper.ps1
+Get-ValidTokens
+
+
+
+
+Serializer Error ("conversation" required):
+Use conversation (not conversation_id):Invoke-Api -endpoint "/api/chats/messages/" -method Post -body @{conversation=1; content="Test"}
+
+
+
+
+Empty Sender Field:
+Verify MessageSerializer in chats/serializers.py sets sender:python manage.py shell
+
+from chats.models import Message
+print(Message.objects.all().values('id', 'sender__username'))
+
+
+
+
+Pagination Issues:
+Verify chats/pagination.py sets page_size = 20 and MessageViewSet uses MessagePagination.
+Test: Invoke-Api -endpoint "/api/chats/messages/?page=2" -method Get.
+
+
+Filtering Issues:
+Verify chats/filters.py defines MessageFilter with participant, timestamp_gte, and timestamp_lte.
+Test: Invoke-Api -endpoint "/api/chats/messages/?participant=2" -method Get.
+
+
+User Not Found:
+Verify users:python manage.py shell
+
+from django.contrib.auth.models import User
+print(User.objects.all())
+
+
+
+
+SyntaxError in init.py:
+Ensure chats/management/__init__.py and chats/management/commands/__init__.py are empty:Set-Content -Path chats\management\__init__.py -Value "" -Encoding UTF8
+Set-Content -Path chats\management\commands\__init__.py -Value "" -Encoding UTF8
+
+
+
+
+
+Contributing
+
+Fork the repository.
+Create a feature branch (git checkout -b feature/your-feature).
+Commit changes (git commit -m "Add your feature").
+Push to the branch (git push origin feature/your-feature).
+Open a pull request.
+
+License
+MIT License
