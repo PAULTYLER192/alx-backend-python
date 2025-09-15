@@ -1,0 +1,226 @@
+{
+  "info": {
+    "name": "MessagingAppAPI",
+    "_postman_id": "unique-id",
+    "description": "Tests for Messaging App API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Get Token - airbnb_user",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\": \"{{username_airbnb}}\", \"password\": \"{{password_airbnb}}\"}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{base_url}}/api/token/"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response has access and refresh tokens\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.access).to.be.a(\"string\");",
+              "    pm.expect(jsonData.refresh).to.be.a(\"string\");",
+              "    pm.environment.set(\"access_token_airbnb\", jsonData.access);",
+              "    pm.environment.set(\"refresh_token_airbnb\", jsonData.refresh);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get Token - user3",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"username\": \"{{username_user3}}\", \"password\": \"{{password_user3}}\"}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{base_url}}/api/token/"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Response has access and refresh tokens\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.access).to.be.a(\"string\");",
+              "    pm.expect(jsonData.refresh).to.be.a(\"string\");",
+              "    pm.environment.set(\"access_token_user3\", jsonData.access);",
+              "    pm.environment.set(\"refresh_token_user3\", jsonData.refresh);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Unauthorized - No Token",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{base_url}}/api/chats/conversations/"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 401 Unauthorized\", function () {",
+              "    pm.response.to.have.status(401);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create Conversation",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token_airbnb}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"participant_ids\": [2]}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{base_url}}/api/chats/conversations/"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Conversation created with participants\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.participants).to.include.members([1, 2]);",
+              "    pm.environment.set(\"conversation_id\", jsonData.id);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Send Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token_airbnb}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"conversation\": \"{{conversation_id}}\", \"content\": \"Hello, testuser!\"}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": "{{base_url}}/api/chats/messages/"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 201 Created\", function () {",
+              "    pm.response.to.have.status(201);",
+              "});",
+              "pm.test(\"Message created with correct content\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.content).to.equal(\"Hello, testuser!\");",
+              "    pm.expect(jsonData.sender.id).to.equal(1);",
+              "    pm.expect(jsonData.conversation).to.equal(pm.environment.get(\"conversation_id\"));",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fetch Conversations",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token_airbnb}}" }
+        ],
+        "url": "{{base_url}}/api/chats/conversations/"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 200\", function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test(\"Conversations returned\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData).to.be.an(\"array\");",
+              "    pm.expect(jsonData.length).to.be.greaterThan(0);",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Unauthorized - user3 Access Conversation",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{access_token_user3}}" }
+        ],
+        "url": "{{base_url}}/api/chats/conversations/{{conversation_id}}/"
+      },
+      "response": [],
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test(\"Status code is 403 Forbidden\", function () {",
+              "    pm.response.to.have.status(403);",
+              "});",
+              "pm.test(\"Error message for non-participant\", function () {",
+              "    var jsonData = pm.response.json();",
+              "    pm.expect(jsonData.detail).to.include(\"You are not a participant\");",
+              "});"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ]
+}
